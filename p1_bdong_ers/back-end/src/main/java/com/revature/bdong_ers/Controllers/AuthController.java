@@ -43,6 +43,12 @@ public class AuthController {
         return ResponseEntity.ok().body("Pong!");
     }
 
+    @GetMapping(value="/id")
+    public ResponseEntity<UserIdDTO> getId(@RequestHeader("Authorization") String token) {
+        int id = authService.getTokenId(token);
+        return ResponseEntity.ok().body(new UserIdDTO(id));
+    }
+
     @Transactional
     @PostMapping(value="/register")
     public ResponseEntity<UserIdDTO> registerUser(@RequestBody User user) {

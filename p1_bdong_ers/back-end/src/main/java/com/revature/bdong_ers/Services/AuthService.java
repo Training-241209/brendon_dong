@@ -56,20 +56,34 @@ public class AuthService {
     }
 
     /**
-     * Decodes the given JWT token and retrieves the subject (email) from it.
+     * Decodes the given JWT token and retrieves the subject (ID) from it.
      * Thank you Bao!
      * @param token the JWT token to decode
-     * @return the subject (email) contained in the token
+     * @return the subject (ID) contained in the token
      * @throws io.jsonwebtoken.JwtException if the token is invalid or expired
      */
-    public UserTokenDTO decodeToken(String token) {
+    public UserIdDTO decodeToken(String token) {
         var claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return new UserTokenDTO(claims.get("userId", Integer.class), claims.get("roleId", Integer.class));
+        return new UserIdDTO(claims.get("userId", Integer.class));
+    }
+
+    /**
+     * 
+     * @param token the JWT token to decode
+     * @return
+     */
+    public int getTokenId(String token) {
+        try {
+            UserIdDTO userInfo = decodeToken(token);
+            return userInfo.getUserId();
+        } catch (JwtException e) {
+            return -1;
+        }
     }
 
     /**
@@ -79,12 +93,7 @@ public class AuthService {
      * @return
      */
     public boolean userExists(String token) {
-        try {
-            UserTokenDTO userInfo = decodeToken(token);
-            return userInfo.getUserId() > 0;
-        } catch (JwtException e) {
-            return false;
-        }
+        return getTokenId(token) > 0;
     }
 
     /**
@@ -96,8 +105,7 @@ public class AuthService {
      */
     public boolean hasAdminPermissions(String token) {
         try {
-            UserTokenDTO userInfo = decodeToken(token);
-            return roleService.hasAdminPermissions(userInfo.getRoleId());
+            return roleService.hasAdminPermissions(getTokenId(token));
         } catch (JwtException e) {
             return false;
         }
@@ -112,8 +120,7 @@ public class AuthService {
      */
     public boolean userMatches(String token, int userId) {
         try {
-            UserTokenDTO userInfo = decodeToken(token);
-            return userInfo.getUserId() == userId;
+            return getTokenId(token) == userId;
         } catch (JwtException e) {
             return false;
         }
@@ -129,8 +136,8 @@ public class AuthService {
      */
     public boolean hasAdminPermissionsOrUserMatches(String token, int userId) {
         try {
-            UserTokenDTO userInfo = decodeToken(token);
-            return roleService.hasAdminPermissions(userInfo.getRoleId()) || userInfo.getUserId() == userId;
+            int tokenId = getTokenId(token);
+            return roleService.hasAdminPermissions(tokenId) || tokenId == userId;
         } catch (JwtException e) {
             return false;
         }
