@@ -1,6 +1,7 @@
 package com.revature.bdong_ers.Controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,23 +14,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.revature.bdong_ers.DTOs.ReimbursementSendDTO;
 import com.revature.bdong_ers.DTOs.ReimbursementStatusDTO;
-import com.revature.bdong_ers.DTOs.UserIdDTO;
 import com.revature.bdong_ers.Entities.Reimbursement;
-import com.revature.bdong_ers.Entities.User;
 import com.revature.bdong_ers.Services.AuthService;
 import com.revature.bdong_ers.Services.ReimbursementService;
+import com.revature.bdong_ers.Services.UserService;
 
 @RestController
 public class ReimbursementController {
     
     private ReimbursementService reimbursementService;
     private AuthService authService;
+    private UserService userService;
 
     @Autowired
-    public ReimbursementController(ReimbursementService reimbursementService, AuthService authService) {
+    public ReimbursementController(ReimbursementService reimbursementService, AuthService authService, UserService userService) {
         this.reimbursementService = reimbursementService;
         this.authService = authService;
+        this.userService = userService;
     }
 
     @PostMapping(value="/reimbursements")
@@ -44,47 +47,55 @@ public class ReimbursementController {
     }
 
     @GetMapping(value="/reimbursements")
-    public ResponseEntity<List<Reimbursement>> getAllReimbursements(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ReimbursementSendDTO>> getAllReimbursements(@RequestHeader("Authorization") String token) {
 
         // Check if user is not an admin
         if (!authService.hasAdminPermissions(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        return ResponseEntity.ok().body(reimbursementService.viewAllReimbursements());
+
+        return ResponseEntity.ok().body(reimbursementService.viewAllReimbursements()
+            .stream()
+            .map((Reimbursement rb) -> new ReimbursementSendDTO(rb, userService))
+            .collect(Collectors.toList()));
     }
 
-    @GetMapping(value="/reimbursements/{id}")
-    public ResponseEntity<List<Reimbursement>> getReimbursementsByUser(@RequestHeader("Authorization") String token,
-            @PathVariable int id) {
+    @GetMapping(value="/reimbursements/me")
+    public ResponseEntity<List<ReimbursementSendDTO>> getReimbursementsByUser(@RequestHeader("Authorization") String token) {
         
-        // Check if user is not an admin AND if user is not obtaining their own reimbursements
-        if (!authService.hasAdminPermissionsOrUserMatches(token, id)) {
+        if (!authService.userExists(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByUserId(id));
+        return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByUserId(authService.getTokenId(token))
+            .stream()
+            .map((Reimbursement rb) -> new ReimbursementSendDTO(rb, userService))
+            .collect(Collectors.toList()));
     }
 
     @GetMapping(value="/reimbursements/status/{status}")
-    public ResponseEntity<List<Reimbursement>> getReimbursementsByStatus(@RequestHeader("Authorization") String token,
+    public ResponseEntity<List<ReimbursementSendDTO>> getReimbursementsByStatus(@RequestHeader("Authorization") String token,
             @PathVariable String status) {
         
         // Check if user is not an admin
         if (!authService.hasAdminPermissions(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByStatus(status.toUpperCase()));
+        return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByStatus(status.toUpperCase())
+            .stream()
+            .map((Reimbursement rb) -> new ReimbursementSendDTO(rb, userService))
+            .collect(Collectors.toList()));
     }
 
-    @GetMapping(value="/reimbursements/{id}/status/{status}")
-    public ResponseEntity<List<Reimbursement>> getReimbursementsByUserIdAndStatus(@RequestHeader("Authorization") String token,
-            @PathVariable int id, @PathVariable String status) {
+    // @GetMapping(value="/reimbursements/{id}/status/{status}")
+    // public ResponseEntity<List<Reimbursement>> getReimbursementsByUserIdAndStatus(@RequestHeader("Authorization") String token,
+    //         @PathVariable int id, @PathVariable String status) {
         
-        // Check if user is not an admin AND if user is not obtaining their own reimbursements
-        if (!authService.hasAdminPermissionsOrUserMatches(token, id)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-        return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByStatus(id, status.toUpperCase()));
-    }
+    //     // Check if user is not an admin AND if user is not obtaining their own reimbursements
+    //     if (!authService.hasAdminPermissionsOrUserMatches(token, id)) {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    //     }
+    //     return ResponseEntity.ok().body(reimbursementService.viewReimbursementsByStatus(id, status.toUpperCase()));
+    // }
 
     @PatchMapping(value="/reimbursements/{id}")
     public ResponseEntity<Reimbursement> patchReimbursementById(@RequestHeader("Authorization") String token,

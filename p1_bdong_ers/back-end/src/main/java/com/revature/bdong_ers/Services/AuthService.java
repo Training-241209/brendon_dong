@@ -3,7 +3,6 @@ package com.revature.bdong_ers.Services;
 import org.springframework.stereotype.Service;
 
 import com.revature.bdong_ers.DTOs.UserIdDTO;
-import com.revature.bdong_ers.DTOs.UserTokenDTO;
 import com.revature.bdong_ers.Entities.User;
 
 import io.jsonwebtoken.JwtException;
@@ -48,7 +47,6 @@ public class AuthService {
     public String generateToken(User user) {
         return Jwts.builder()
                 .claim("userId", user.getUserId())
-                .claim("roleId", user.getRoleId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 minutes
                 .signWith(getSigningKey())
@@ -73,7 +71,7 @@ public class AuthService {
     }
 
     /**
-     * 
+     * Gets user ID from a supplied token.
      * @param token the JWT token to decode
      * @return
      */

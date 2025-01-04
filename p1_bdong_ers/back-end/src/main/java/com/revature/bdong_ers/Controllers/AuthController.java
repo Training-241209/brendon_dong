@@ -1,38 +1,31 @@
 package com.revature.bdong_ers.Controllers;
 
 import com.revature.bdong_ers.DTOs.UserLoginDTO;
-import com.revature.bdong_ers.DTOs.ReimbursementStatusDTO;
 import com.revature.bdong_ers.DTOs.UserIdDTO;
 import com.revature.bdong_ers.DTOs.UserResponseDTO;
-import com.revature.bdong_ers.Entities.Reimbursement;
 import com.revature.bdong_ers.Entities.User;
 import com.revature.bdong_ers.Services.AuthService;
-import com.revature.bdong_ers.Services.ReimbursementService;
 import com.revature.bdong_ers.Services.UserService;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class AuthController {
 
     public static final String AUTH_HEADER_NAME = "authorization";
 
-    private ReimbursementService reimbursementService;
     private UserService userService;
     private AuthService authService;
 
     @Autowired
-    public AuthController(ReimbursementService reimbursementService, UserService userService, AuthService authService) {
-        this.reimbursementService = reimbursementService;
+    public AuthController(UserService userService, AuthService authService) {
         this.userService = userService;
         this.authService = authService;
     }
@@ -69,6 +62,11 @@ public class AuthController {
             headers = createHttpAuthHeaders(token);
         }
         return ResponseEntity.ok().headers(headers).body(response);
+    }
+
+    @GetMapping(value="/admin/me")
+    public ResponseEntity<Boolean> isAdmin(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok().body(authService.hasAdminPermissions(token));
     }
 
     private HttpHeaders createHttpAuthHeaders(String token) {

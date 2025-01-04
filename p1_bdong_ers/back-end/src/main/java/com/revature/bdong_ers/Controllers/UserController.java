@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.bdong_ers.DTOs.UserIdDTO;
+import com.revature.bdong_ers.DTOs.UserResponseDTO;
 import com.revature.bdong_ers.Entities.User;
 import com.revature.bdong_ers.Services.AuthService;
 import com.revature.bdong_ers.Services.ReimbursementService;
@@ -35,7 +36,7 @@ public class UserController {
         this.authService = authService;
     }
 
-    @GetMapping("/users")
+    @GetMapping(value="/users")
     public ResponseEntity<List<UserIdDTO>> getUsers(@RequestHeader("Authorization") String token) {
 
         // Check if user is not an admin
@@ -51,17 +52,26 @@ public class UserController {
         return ResponseEntity.ok().body(users);
     }
 
-    @GetMapping(value="/users/{id}")
-    public ResponseEntity<User> getUser(@RequestHeader("Authorization") String token,
-            @PathVariable int id) {
-
-        // Check if user is not an admin AND if user is not obtaining their own account info
-        if (!authService.hasAdminPermissionsOrUserMatches(token, id)) {
+    @GetMapping(value="/users/me")
+    public ResponseEntity<UserResponseDTO> getSelf(@RequestHeader("Authorization") String token) {
+        if (!authService.userExists(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-
-        return ResponseEntity.ok().body(userService.getUser(id));
+        User user = userService.getUser(authService.getTokenId(token));
+        return ResponseEntity.ok().body(new UserResponseDTO(user));
     }
+
+    // @GetMapping(value="/users/{id}")
+    // public ResponseEntity<User> getUser(@RequestHeader("Authorization") String token,
+    //         @PathVariable int id) {
+
+    //     // Check if user is not an admin AND if user is not obtaining their own account info
+    //     if (!authService.hasAdminPermissionsOrUserMatches(token, id)) {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    //     }
+
+    //     return ResponseEntity.ok().body(userService.getUser(id));
+    // }
 
     @Transactional
     @PatchMapping(value="/users/{id}")
@@ -82,7 +92,7 @@ public class UserController {
          
         // Check if user is not an admin
         if (!authService.hasAdminPermissions(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
         int rowsDeleted = reimbursementService.deleteByUserId(id); 
