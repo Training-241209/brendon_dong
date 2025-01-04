@@ -4,48 +4,32 @@
 // import RequestIcon from "src/assets/request.svg"
 // import SidebarIcon from "src/assets/sidebar.svg"
 
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator, SidebarTrigger } from "@/components/ui/sidebar"
-import { Link } from "@tanstack/react-router"
-import { HomeIcon, Icon, LogOutIcon, UserPenIcon, UsersIcon } from "lucide-react"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator, SidebarTrigger } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
+import { useQueryClient } from "@tanstack/react-query"
+import { Link, useLocation } from "@tanstack/react-router"
+import { adminItems, userItems } from "../constants/sidebarItems"
  
-const items = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: HomeIcon
-  },
-  {
-    title: "Users",
-    url: "/users",
-    icon: UsersIcon
-  },
-  {
-    title: "My Info",
-    url: "/",
-    icon: UserPenIcon
-  },
-  {
-    title: "Logout",
-    url: "/",
-    icon: LogOutIcon
-  },
-]
+
 
 export function AppSidebar() {
+  const queryClient = useQueryClient()
+  const admin = queryClient.getQueryData(['admin']);
+  const items = admin ? adminItems : userItems
+  const currentPath = useLocation()
   return (
     <Sidebar collapsible="icon">
+      <SidebarHeader className="flex items-end">
+        <SidebarTrigger />
+      </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup className="justify-end">
-          <SidebarMenuItem>Test</SidebarMenuItem>
-          <SidebarTrigger className="justify-end" />
-        </SidebarGroup>
         <SidebarSeparator />
         <SidebarGroup>
-            <SidebarMenu>
+            <SidebarMenu className="max-w-full">
               {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link to={item.url}>
+                      <Link to={item.url} className={cn(currentPath.pathname == item.url ? "text-sidebar-accent-foreground bg-sidebar-accent" : "")}>
                         {item.icon && <item.icon />}
                         {item.title}
                       </Link>

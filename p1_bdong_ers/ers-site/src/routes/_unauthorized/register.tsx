@@ -6,10 +6,10 @@ import {
   CardFooter,
   CardDescription,
 } from '@/components/ui/card'
-import LoginForm from '@/features/auth/components/login-form'
+import RegisterForm from '@/features/auth/components/register-form'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_auth/login')({
+export const Route = createFileRoute('/_unauthorized/register')({
   component: RouteComponent,
 })
 
@@ -17,14 +17,14 @@ function RouteComponent() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>Input your credentials</CardDescription>
+        <CardTitle>Register</CardTitle>
+        <CardDescription>Sign up</CardDescription>
       </CardHeader>
       <CardContent>
-        <LoginForm />
+        <RegisterForm />
       </CardContent>
       <CardFooter>
-        <Link to="/register">Register</Link>
+        <Link to="/login">Login</Link>
       </CardFooter>
     </Card>
   )

@@ -8,26 +8,38 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProtectedImport } from './routes/_protected'
-import { Route as AuthImport } from './routes/_auth'
+import { Route as UnauthorizedImport } from './routes/_unauthorized'
+import { Route as AuthorizedImport } from './routes/_authorized'
 import { Route as IndexImport } from './routes/index'
-import { Route as ProtectedDashboardImport } from './routes/_protected/dashboard'
-import { Route as AuthRegisterImport } from './routes/_auth/register'
-import { Route as AuthLoginImport } from './routes/_auth/login'
-import { Route as ProtectedAdminUsersImport } from './routes/_protected/admin/users'
+import { Route as UnauthorizedRegisterImport } from './routes/_unauthorized/register'
+import { Route as UnauthorizedLoginImport } from './routes/_unauthorized/login'
+import { Route as AuthorizedLogoutImport } from './routes/_authorized/logout'
+import { Route as AuthorizedAdminImport } from './routes/_authorized/_admin'
+
+// Create Virtual Routes
+
+const AuthorizedDashboardLazyImport = createFileRoute(
+  '/_authorized/dashboard',
+)()
+const AuthorizedAccountLazyImport = createFileRoute('/_authorized/account')()
+const AuthorizedAdminUsersLazyImport = createFileRoute(
+  '/_authorized/_admin/users',
+)()
 
 // Create/Update Routes
 
-const ProtectedRoute = ProtectedImport.update({
-  id: '/_protected',
+const UnauthorizedRoute = UnauthorizedImport.update({
+  id: '/_unauthorized',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthRoute = AuthImport.update({
-  id: '/_auth',
+const AuthorizedRoute = AuthorizedImport.update({
+  id: '/_authorized',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,29 +49,52 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProtectedDashboardRoute = ProtectedDashboardImport.update({
+const AuthorizedDashboardLazyRoute = AuthorizedDashboardLazyImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => ProtectedRoute,
-} as any)
+  getParentRoute: () => AuthorizedRoute,
+} as any).lazy(() =>
+  import('./routes/_authorized/dashboard.lazy').then((d) => d.Route),
+)
 
-const AuthRegisterRoute = AuthRegisterImport.update({
+const AuthorizedAccountLazyRoute = AuthorizedAccountLazyImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthorizedRoute,
+} as any).lazy(() =>
+  import('./routes/_authorized/account.lazy').then((d) => d.Route),
+)
+
+const UnauthorizedRegisterRoute = UnauthorizedRegisterImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => UnauthorizedRoute,
 } as any)
 
-const AuthLoginRoute = AuthLoginImport.update({
+const UnauthorizedLoginRoute = UnauthorizedLoginImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => UnauthorizedRoute,
 } as any)
 
-const ProtectedAdminUsersRoute = ProtectedAdminUsersImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => ProtectedRoute,
+const AuthorizedLogoutRoute = AuthorizedLogoutImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => AuthorizedRoute,
 } as any)
+
+const AuthorizedAdminRoute = AuthorizedAdminImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthorizedRoute,
+} as any)
+
+const AuthorizedAdminUsersLazyRoute = AuthorizedAdminUsersLazyImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthorizedAdminRoute,
+} as any).lazy(() =>
+  import('./routes/_authorized/_admin/users.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -72,135 +107,200 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_auth': {
-      id: '/_auth'
+    '/_authorized': {
+      id: '/_authorized'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AuthImport
+      preLoaderRoute: typeof AuthorizedImport
       parentRoute: typeof rootRoute
     }
-    '/_protected': {
-      id: '/_protected'
+    '/_unauthorized': {
+      id: '/_unauthorized'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof ProtectedImport
+      preLoaderRoute: typeof UnauthorizedImport
       parentRoute: typeof rootRoute
     }
-    '/_auth/login': {
-      id: '/_auth/login'
+    '/_authorized/_admin': {
+      id: '/_authorized/_admin'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthorizedAdminImport
+      parentRoute: typeof AuthorizedImport
+    }
+    '/_authorized/logout': {
+      id: '/_authorized/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof AuthorizedLogoutImport
+      parentRoute: typeof AuthorizedImport
+    }
+    '/_unauthorized/login': {
+      id: '/_unauthorized/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof AuthLoginImport
-      parentRoute: typeof AuthImport
+      preLoaderRoute: typeof UnauthorizedLoginImport
+      parentRoute: typeof UnauthorizedImport
     }
-    '/_auth/register': {
-      id: '/_auth/register'
+    '/_unauthorized/register': {
+      id: '/_unauthorized/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterImport
-      parentRoute: typeof AuthImport
+      preLoaderRoute: typeof UnauthorizedRegisterImport
+      parentRoute: typeof UnauthorizedImport
     }
-    '/_protected/dashboard': {
-      id: '/_protected/dashboard'
+    '/_authorized/account': {
+      id: '/_authorized/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthorizedAccountLazyImport
+      parentRoute: typeof AuthorizedImport
+    }
+    '/_authorized/dashboard': {
+      id: '/_authorized/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof ProtectedDashboardImport
-      parentRoute: typeof ProtectedImport
+      preLoaderRoute: typeof AuthorizedDashboardLazyImport
+      parentRoute: typeof AuthorizedImport
     }
-    '/_protected/admin/users': {
-      id: '/_protected/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof ProtectedAdminUsersImport
-      parentRoute: typeof ProtectedImport
+    '/_authorized/_admin/users': {
+      id: '/_authorized/_admin/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthorizedAdminUsersLazyImport
+      parentRoute: typeof AuthorizedAdminImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface AuthRouteChildren {
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthRegisterRoute: typeof AuthRegisterRoute
+interface AuthorizedAdminRouteChildren {
+  AuthorizedAdminUsersLazyRoute: typeof AuthorizedAdminUsersLazyRoute
 }
 
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
+const AuthorizedAdminRouteChildren: AuthorizedAdminRouteChildren = {
+  AuthorizedAdminUsersLazyRoute: AuthorizedAdminUsersLazyRoute,
 }
 
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+const AuthorizedAdminRouteWithChildren = AuthorizedAdminRoute._addFileChildren(
+  AuthorizedAdminRouteChildren,
+)
 
-interface ProtectedRouteChildren {
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
-  ProtectedAdminUsersRoute: typeof ProtectedAdminUsersRoute
+interface AuthorizedRouteChildren {
+  AuthorizedAdminRoute: typeof AuthorizedAdminRouteWithChildren
+  AuthorizedLogoutRoute: typeof AuthorizedLogoutRoute
+  AuthorizedAccountLazyRoute: typeof AuthorizedAccountLazyRoute
+  AuthorizedDashboardLazyRoute: typeof AuthorizedDashboardLazyRoute
 }
 
-const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
-  ProtectedAdminUsersRoute: ProtectedAdminUsersRoute,
+const AuthorizedRouteChildren: AuthorizedRouteChildren = {
+  AuthorizedAdminRoute: AuthorizedAdminRouteWithChildren,
+  AuthorizedLogoutRoute: AuthorizedLogoutRoute,
+  AuthorizedAccountLazyRoute: AuthorizedAccountLazyRoute,
+  AuthorizedDashboardLazyRoute: AuthorizedDashboardLazyRoute,
 }
 
-const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
-  ProtectedRouteChildren,
+const AuthorizedRouteWithChildren = AuthorizedRoute._addFileChildren(
+  AuthorizedRouteChildren,
+)
+
+interface UnauthorizedRouteChildren {
+  UnauthorizedLoginRoute: typeof UnauthorizedLoginRoute
+  UnauthorizedRegisterRoute: typeof UnauthorizedRegisterRoute
+}
+
+const UnauthorizedRouteChildren: UnauthorizedRouteChildren = {
+  UnauthorizedLoginRoute: UnauthorizedLoginRoute,
+  UnauthorizedRegisterRoute: UnauthorizedRegisterRoute,
+}
+
+const UnauthorizedRouteWithChildren = UnauthorizedRoute._addFileChildren(
+  UnauthorizedRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof ProtectedRouteWithChildren
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
-  '/dashboard': typeof ProtectedDashboardRoute
-  '/admin/users': typeof ProtectedAdminUsersRoute
+  '': typeof AuthorizedAdminRouteWithChildren
+  '/logout': typeof AuthorizedLogoutRoute
+  '/login': typeof UnauthorizedLoginRoute
+  '/register': typeof UnauthorizedRegisterRoute
+  '/account': typeof AuthorizedAccountLazyRoute
+  '/dashboard': typeof AuthorizedDashboardLazyRoute
+  '/users': typeof AuthorizedAdminUsersLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof ProtectedRouteWithChildren
-  '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
-  '/dashboard': typeof ProtectedDashboardRoute
-  '/admin/users': typeof ProtectedAdminUsersRoute
+  '': typeof AuthorizedAdminRouteWithChildren
+  '/logout': typeof AuthorizedLogoutRoute
+  '/login': typeof UnauthorizedLoginRoute
+  '/register': typeof UnauthorizedRegisterRoute
+  '/account': typeof AuthorizedAccountLazyRoute
+  '/dashboard': typeof AuthorizedDashboardLazyRoute
+  '/users': typeof AuthorizedAdminUsersLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_auth': typeof AuthRouteWithChildren
-  '/_protected': typeof ProtectedRouteWithChildren
-  '/_auth/login': typeof AuthLoginRoute
-  '/_auth/register': typeof AuthRegisterRoute
-  '/_protected/dashboard': typeof ProtectedDashboardRoute
-  '/_protected/admin/users': typeof ProtectedAdminUsersRoute
+  '/_authorized': typeof AuthorizedRouteWithChildren
+  '/_unauthorized': typeof UnauthorizedRouteWithChildren
+  '/_authorized/_admin': typeof AuthorizedAdminRouteWithChildren
+  '/_authorized/logout': typeof AuthorizedLogoutRoute
+  '/_unauthorized/login': typeof UnauthorizedLoginRoute
+  '/_unauthorized/register': typeof UnauthorizedRegisterRoute
+  '/_authorized/account': typeof AuthorizedAccountLazyRoute
+  '/_authorized/dashboard': typeof AuthorizedDashboardLazyRoute
+  '/_authorized/_admin/users': typeof AuthorizedAdminUsersLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/register' | '/dashboard' | '/admin/users'
+  fullPaths:
+    | '/'
+    | ''
+    | '/logout'
+    | '/login'
+    | '/register'
+    | '/account'
+    | '/dashboard'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/register' | '/dashboard' | '/admin/users'
+  to:
+    | '/'
+    | ''
+    | '/logout'
+    | '/login'
+    | '/register'
+    | '/account'
+    | '/dashboard'
+    | '/users'
   id:
     | '__root__'
     | '/'
-    | '/_auth'
-    | '/_protected'
-    | '/_auth/login'
-    | '/_auth/register'
-    | '/_protected/dashboard'
-    | '/_protected/admin/users'
+    | '/_authorized'
+    | '/_unauthorized'
+    | '/_authorized/_admin'
+    | '/_authorized/logout'
+    | '/_unauthorized/login'
+    | '/_unauthorized/register'
+    | '/_authorized/account'
+    | '/_authorized/dashboard'
+    | '/_authorized/_admin/users'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRouteWithChildren
-  ProtectedRoute: typeof ProtectedRouteWithChildren
+  AuthorizedRoute: typeof AuthorizedRouteWithChildren
+  UnauthorizedRoute: typeof UnauthorizedRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRouteWithChildren,
-  ProtectedRoute: ProtectedRouteWithChildren,
+  AuthorizedRoute: AuthorizedRouteWithChildren,
+  UnauthorizedRoute: UnauthorizedRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -214,42 +314,59 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_auth",
-        "/_protected"
+        "/_authorized",
+        "/_unauthorized"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/_auth": {
-      "filePath": "_auth.tsx",
+    "/_authorized": {
+      "filePath": "_authorized.tsx",
       "children": [
-        "/_auth/login",
-        "/_auth/register"
+        "/_authorized/_admin",
+        "/_authorized/logout",
+        "/_authorized/account",
+        "/_authorized/dashboard"
       ]
     },
-    "/_protected": {
-      "filePath": "_protected.tsx",
+    "/_unauthorized": {
+      "filePath": "_unauthorized.tsx",
       "children": [
-        "/_protected/dashboard",
-        "/_protected/admin/users"
+        "/_unauthorized/login",
+        "/_unauthorized/register"
       ]
     },
-    "/_auth/login": {
-      "filePath": "_auth/login.tsx",
-      "parent": "/_auth"
+    "/_authorized/_admin": {
+      "filePath": "_authorized/_admin.tsx",
+      "parent": "/_authorized",
+      "children": [
+        "/_authorized/_admin/users"
+      ]
     },
-    "/_auth/register": {
-      "filePath": "_auth/register.tsx",
-      "parent": "/_auth"
+    "/_authorized/logout": {
+      "filePath": "_authorized/logout.tsx",
+      "parent": "/_authorized"
     },
-    "/_protected/dashboard": {
-      "filePath": "_protected/dashboard.tsx",
-      "parent": "/_protected"
+    "/_unauthorized/login": {
+      "filePath": "_unauthorized/login.tsx",
+      "parent": "/_unauthorized"
     },
-    "/_protected/admin/users": {
-      "filePath": "_protected/admin/users.tsx",
-      "parent": "/_protected"
+    "/_unauthorized/register": {
+      "filePath": "_unauthorized/register.tsx",
+      "parent": "/_unauthorized"
+    },
+    "/_authorized/account": {
+      "filePath": "_authorized/account.lazy.tsx",
+      "parent": "/_authorized"
+    },
+    "/_authorized/dashboard": {
+      "filePath": "_authorized/dashboard.lazy.tsx",
+      "parent": "/_authorized"
+    },
+    "/_authorized/_admin/users": {
+      "filePath": "_authorized/_admin/users.lazy.tsx",
+      "parent": "/_authorized/_admin"
     }
   }
 }

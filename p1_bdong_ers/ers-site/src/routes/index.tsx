@@ -1,4 +1,4 @@
-import useAuth from '@/features/auth/hooks/use-auth';
+import useAuthUser from '@/features/auth/hooks/use-auth-user';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react';
@@ -8,13 +8,11 @@ export const Route = createFileRoute('/')({
 })
 
 function RouteComponent() {
-  const { data: auth } = useAuth();
+  const { data: auth, isStale } = useAuthUser();
   const router = useRouter();
 
   useEffect(() => {
-    console.log("RETURNING AUTH OBJECT");
-    console.log(auth);
-    if (auth) {
+    if (auth && !isStale) {
       router.navigate({to: "/dashboard"});
     } else {
       router.navigate({to: "/login"})

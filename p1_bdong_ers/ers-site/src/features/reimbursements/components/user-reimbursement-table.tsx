@@ -1,7 +1,11 @@
 import { TableCaption, TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
+import UseGetReimbursements from "../hooks/use-get-reimbursements";
 
 
 export default function UserReimbursementTable() {
+
+    const {data : reimbursements} = UseGetReimbursements()
+
     return (
         <Table className="bg-white">
             <TableHeader>

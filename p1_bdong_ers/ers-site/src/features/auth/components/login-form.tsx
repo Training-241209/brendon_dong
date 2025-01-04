@@ -1,60 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { axiosInstance } from "@/lib/axios-config";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
-import { AxiosError } from "axios";
 import { useForm } from "react-hook-form"
 
 import { z } from "zod"
- 
-const formSchema = z.object({
-  username: z.string(),
-  password: z.string()
-})
+import { loginSchema } from "../schemas/user-input-schemas";
+import useLogin from "../hooks/use-login";
 
 export default function LoginForm() {
   
-  const router = useRouter()
-  const queryClient = useQueryClient();
+  const { mutate: login, isPending } = useLogin();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
-      password: ""
+        username: "",
+        password: ""
     },
   })
 
-  // { I'm not understanding what sets the initial query data of ["auth"] in the query client. }
-  // { Without it being set, queryClient.setQueryData() }
-  // { The examples I'm seeing are either for GET requests, or I'm not seeing and following where the value is getting set. }
-  // { For now, I'm going to comment this out and rely on Bao's example, but I'd like to understand what I'm missing. }
-  //
-  const loginMutation = useMutation({
-    mutationFn: login,
-    onSuccess: (successfulResponse) => {
-      queryClient.invalidateQueries({queryKey: ["auth"]})
-      queryClient.setQueryData(["auth"], successfulResponse.headers.authorization)
-      router.navigate({to:"/"})
-    },
-    onError: (error : AxiosError) => {
-      //TODO: Use state to affect + disable components, display error, etc
-      console.log(error.response);
-    },
-  });
-  
-  async function login(values: z.infer<typeof formSchema>) {
-    return await axiosInstance.post('/login', {
-      username: values.username,
-      password: values.password,
-    })
-  }
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    loginMutation.mutate(values)
+  function onSubmit(values: z.infer<typeof loginSchema>) {
+    login(values);
   }
 
   return (
@@ -83,7 +50,7 @@ export default function LoginForm() {
           )}
         />
         <FormMessage />
-        <Button className="flex text-right" type="submit">Submit</Button>
+        <Button className="flex text-right" type="submit" disabled={isPending}>Submit</Button>
       </form>
     </Form>
   )

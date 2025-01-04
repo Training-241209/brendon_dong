@@ -5,22 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import { z } from "zod"
- 
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  confirmPassword: z.string(),
-  firstName: z.string(),
-  lastName: z.string()
-})
+import { registerSchema } from "../schemas/user-input-schemas";
 
 export default function RegisterForm() {
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof registerSchema>>({
+      resolver: zodResolver(registerSchema),
       defaultValues: {
         username: "",
         password: "",
@@ -30,7 +19,7 @@ export default function RegisterForm() {
       },
     })
    
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    function onSubmit(values: z.infer<typeof registerSchema>) {
       console.log(values)
     }
 

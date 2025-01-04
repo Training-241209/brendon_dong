@@ -14,28 +14,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
+import UseCreateReimbursement from "../hooks/use-create-reimbursement";
 
 export default function CreateReimbursementDialog() {
 
-    const formSchema = z.object({
-      amount: z.number(),
-      description: z.string()
-    })
+    const {mutate: createReimbursement} = UseCreateReimbursement()
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof reimbursementCreationSchema>>({
+        resolver: zodResolver(reimbursementCreationSchema),
         defaultValues: {
             amount: 0,
             description: ""
         },
     })
     
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
-    }
-
-    function requestReimbursement() {
-
+    function onSubmit(values: z.infer<typeof reimbursementCreationSchema>) {
+        createReimbursement(values)
     }
 
     return (
