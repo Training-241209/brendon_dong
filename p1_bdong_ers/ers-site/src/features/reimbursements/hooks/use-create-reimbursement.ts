@@ -1,14 +1,15 @@
 import { axiosInstance } from "@/lib/axios-config";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
 import { z } from "zod";
 import useMe from "@/features/auth/hooks/use-me";
-import useAuthUser from "@/features/auth/hooks/use-auth-user";
+import useAuth from "@/features/auth/hooks/use-auth";
 
 export default function UseCreateReimbursement() {
 
+    const queryClient = useQueryClient()
     const { data: user } = useMe()
-    const { data: authToken } = useAuthUser()
+    const { data: authToken } = useAuth()
 
     return useMutation({
         mutationFn: async (props : z.infer<typeof reimbursementCreationSchema>) => {
@@ -23,7 +24,10 @@ export default function UseCreateReimbursement() {
             })
             return request.data;
         },
-        onSuccess: () => { console.log("Reimbursement created")},
+        onSuccess: () => {
+            queryClient.refetchQueries({queryKey: ["reimbursements"]})
+            console.log("Reimbursement created")
+        },
         onError: (err) => { console.log(err)}
     })
 }

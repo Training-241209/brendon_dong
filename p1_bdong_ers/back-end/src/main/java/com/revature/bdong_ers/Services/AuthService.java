@@ -2,7 +2,7 @@ package com.revature.bdong_ers.Services;
 
 import org.springframework.stereotype.Service;
 
-import com.revature.bdong_ers.DTOs.UserIdDTO;
+import com.revature.bdong_ers.DTOs.UserIdPermissionsDTO;
 import com.revature.bdong_ers.Entities.User;
 
 import io.jsonwebtoken.JwtException;
@@ -47,6 +47,7 @@ public class AuthService {
     public String generateToken(User user) {
         return Jwts.builder()
                 .claim("userId", user.getUserId())
+                .claim("admin", roleService.hasAdminPermissions(user))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 minutes
                 .signWith(getSigningKey())
@@ -60,14 +61,14 @@ public class AuthService {
      * @return the subject (ID) contained in the token
      * @throws io.jsonwebtoken.JwtException if the token is invalid or expired
      */
-    public UserIdDTO decodeToken(String token) {
+    public UserIdPermissionsDTO decodeToken(String token) {
         var claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return new UserIdDTO(claims.get("userId", Integer.class));
+        return new UserIdPermissionsDTO(claims.get("userId", Integer.class), claims.get("admin", Boolean.class));
     }
 
     /**
@@ -77,7 +78,7 @@ public class AuthService {
      */
     public int getTokenId(String token) {
         try {
-            UserIdDTO userInfo = decodeToken(token);
+            UserIdPermissionsDTO userInfo = decodeToken(token);
             return userInfo.getUserId();
         } catch (JwtException e) {
             return -1;

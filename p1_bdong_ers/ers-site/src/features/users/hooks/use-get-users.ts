@@ -1,11 +1,11 @@
 import { axiosInstance } from "@/lib/axios-config";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import useAuthUser from "@/features/auth/hooks/use-auth-user";
+import useAuth from "@/features/auth/hooks/use-auth";
 
 export default function UseGetUsers() {
     const router = useRouter();
-    const { data: authToken } = useAuthUser();
+    const { data: authToken } = useAuth();
 
     return useQuery({
         queryKey: ["users"],
@@ -21,7 +21,6 @@ export default function UseGetUsers() {
                 return null;
             }
         },
-        enabled: !!authToken,
-        staleTime: 1000 * 60 * 5, // 5 mins
+        staleTime: 1000 * 60 * 15
     });
 }

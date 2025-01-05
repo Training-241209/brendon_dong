@@ -12,6 +12,7 @@ export default function useLogin() {
         onSuccess: (successfulResponse) => {
             queryClient.invalidateQueries({queryKey: ["auth"]})
             queryClient.setQueryData(["auth"], successfulResponse.headers.authorization)
+            queryClient.refetchQueries({ queryKey: ["me"] })
         },
         onError: (error : AxiosError) => {
             console.log(error.response);

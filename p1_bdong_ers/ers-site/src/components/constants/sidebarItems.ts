@@ -1,4 +1,4 @@
-import { HomeIcon, UserPenIcon, LogOutIcon, UsersIcon } from "lucide-react"
+import { HomeIcon, UserPenIcon, LogOutIcon, UsersIcon, StampIcon } from "lucide-react"
 
 export const userItems = [
     {
@@ -7,7 +7,7 @@ export const userItems = [
       icon: HomeIcon
     },
     {
-      title: "Account",
+      title: "My Account",
       url: "/account",
       icon: UserPenIcon
     },
@@ -25,12 +25,17 @@ export const adminItems = [
     icon: HomeIcon
 },
 {
+    title: "Reimbursements",
+    url: "/reimbursements",
+    icon: StampIcon
+},
+{
     title: "Users",
     url: "/users",
     icon: UsersIcon
 },
 {
-    title: "Account",
+    title: "My Account",
     url: "/account",
     icon: UserPenIcon
 },

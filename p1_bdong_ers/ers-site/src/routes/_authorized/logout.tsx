@@ -11,7 +11,7 @@ function RouteComponent() {
     const router = useRouter()
 
     useEffect(() => {
-        queryClient.invalidateQueries()
+        queryClient.clear()
         router.navigate({to: "/login"})
     });
 }

@@ -1,16 +1,18 @@
 package com.revature.bdong_ers.Controllers;
 
 import com.revature.bdong_ers.DTOs.UserLoginDTO;
-import com.revature.bdong_ers.DTOs.UserIdDTO;
+import com.revature.bdong_ers.DTOs.UserIdPermissionsDTO;
 import com.revature.bdong_ers.DTOs.UserResponseDTO;
 import com.revature.bdong_ers.Entities.User;
 import com.revature.bdong_ers.Services.AuthService;
+import com.revature.bdong_ers.Services.RoleService;
 import com.revature.bdong_ers.Services.UserService;
 
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,11 +25,13 @@ public class AuthController {
 
     private UserService userService;
     private AuthService authService;
+    private RoleService roleService;
 
     @Autowired
-    public AuthController(UserService userService, AuthService authService) {
+    public AuthController(UserService userService, AuthService authService, RoleService roleService) {
         this.userService = userService;
         this.authService = authService;
+        this.roleService = roleService;
     }
 
     @GetMapping(value="/ping")
@@ -36,19 +40,13 @@ public class AuthController {
         return ResponseEntity.ok().body("Pong!");
     }
 
-    @GetMapping(value="/id")
-    public ResponseEntity<UserIdDTO> getId(@RequestHeader("Authorization") String token) {
-        int id = authService.getTokenId(token);
-        return ResponseEntity.ok().body(new UserIdDTO(id));
-    }
-
     @Transactional
     @PostMapping(value="/register")
-    public ResponseEntity<UserIdDTO> registerUser(@RequestBody User user) {
+    public ResponseEntity<UserIdPermissionsDTO> registerUser(@RequestBody User user) {
         User registeredUser = userService.registerAccount(user);
         String token = authService.generateToken(registeredUser);
         HttpHeaders headers = createHttpAuthHeaders(token);
-        return ResponseEntity.ok().headers(headers).body(new UserIdDTO(registeredUser));
+        return ResponseEntity.ok().headers(headers).body(new UserIdPermissionsDTO(registeredUser));
     }
 
     @PostMapping(value="/login")
@@ -58,15 +56,22 @@ public class AuthController {
         UserResponseDTO response = null;
         if (validUser != null) {
             String token = authService.generateToken(validUser);
-            response = new UserResponseDTO(validUser);
+            response = new UserResponseDTO(validUser, roleService);
             headers = createHttpAuthHeaders(token);
         }
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
-    @GetMapping(value="/admin/me")
-    public ResponseEntity<Boolean> isAdmin(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok().body(authService.hasAdminPermissions(token));
+    @PatchMapping(value="/promote/{id}")
+    public ResponseEntity<UserResponseDTO> promoteUser(@RequestHeader("Authorization") String token,  @PathVariable int id) {
+
+        // Check if user is not an admin
+        if (!authService.hasAdminPermissions(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        return ResponseEntity.ok().body(new UserResponseDTO(roleService.promoteUser(id), roleService));
+
     }
 
     private HttpHeaders createHttpAuthHeaders(String token) {

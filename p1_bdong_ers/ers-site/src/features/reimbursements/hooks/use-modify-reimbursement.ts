@@ -1,19 +1,30 @@
-import { useMutation } from "@tanstack/react-query";
-import Reimbursement from "../schemas/reimbursement-schemas";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {  reimbursementEditSchema } from "../schemas/reimbursement-schemas";
 import { axiosInstance } from "@/lib/axios-config";
+import useAuth from "@/features/auth/hooks/use-auth";
+import { z } from "zod";
 
 export default function UseModifyReimbursement() {
 
+    const queryClient = useQueryClient();
+    const { data: authToken } = useAuth();
+
     // need to add reimbursement ID
     return useMutation({
-        mutationFn: async (props : Reimbursement) => {
-            const request = await axiosInstance.patch("/reimbursements", {
+        mutationFn: async (props : z.infer<typeof reimbursementEditSchema>) => {
+            const request = await axiosInstance.patch(`/reimbursements/${props.reimbursementId}`, {
                 description: props.description,
                 amount: props.amount,
-            })
-
+            }, { headers: {
+                'Authorization': `${authToken}`
+                }}
+            );
             return request.data;
         },
-        onSuccess: () => {}
+        onSuccess: () => {
+            queryClient.refetchQueries({queryKey: ["reimbursements"]})
+            console.log("Reimbursement created")
+        },
+        onError: (err) => { console.log(err)}
     });
 }

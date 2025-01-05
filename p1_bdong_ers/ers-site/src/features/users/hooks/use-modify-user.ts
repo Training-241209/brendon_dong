@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/lib/axios-config";
 import { useMutation } from "@tanstack/react-query";
-import User from "../schemas/user";
+import User from "../schemas/user-schemas";
 
 export default function UseModifyUser() {
 

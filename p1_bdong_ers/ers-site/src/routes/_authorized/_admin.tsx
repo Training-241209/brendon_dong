@@ -1,4 +1,4 @@
-import useAuthAdmin from '@/features/auth/hooks/use-auth-admin'
+import useMe from '@/features/auth/hooks/use-me';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react';
 
@@ -9,13 +9,13 @@ export const Route = createFileRoute('/_authorized/_admin')({
 function RouteComponent() {
 
   const router = useRouter()
-  const { data: isAdmin, isStale } = useAuthAdmin()
+  const { data: user, isStale, isLoading } = useMe()
 
   useEffect(() => {
-        if (!isAdmin || isStale) {
-          router.navigate({to: "/login"})
-        }
-    }, [isAdmin]);
+      if (!user.admin || isStale) {
+        router.navigate({to: "/login"})
+      }
+    }, [user]);
     
-  return <Outlet />
+  return <> { isLoading ? <></> : <Outlet />} </>
 }

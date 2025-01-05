@@ -1,5 +1,4 @@
-import useAuthAdmin from '@/features/auth/hooks/use-auth-admin'
-import useAuthUser from '@/features/auth/hooks/use-auth-user'
+import useAuth from '@/features/auth/hooks/use-auth'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
@@ -9,8 +8,7 @@ export const Route = createFileRoute('/_unauthorized')({
 
 function RouteComponent() {
   const router = useRouter()
-  const {data : auth, isStale} = useAuthUser()
-  const {data : isAdmin } = useAuthAdmin()
+  const {data : auth, isStale} = useAuth()
 
   useEffect(() => {
     if (!isStale) {

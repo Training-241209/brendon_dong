@@ -6,8 +6,12 @@ import { useForm } from "react-hook-form"
 
 import { z } from "zod"
 import { registerSchema } from "../schemas/user-input-schemas";
+import useRegister from "../hooks/use-register";
 
 export default function RegisterForm() {
+
+    const { mutate: register, isPending } = useRegister();
+
     const form = useForm<z.infer<typeof registerSchema>>({
       resolver: zodResolver(registerSchema),
       defaultValues: {
@@ -21,6 +25,7 @@ export default function RegisterForm() {
    
     function onSubmit(values: z.infer<typeof registerSchema>) {
       console.log(values)
+      register(values)
     }
 
     return (
@@ -81,7 +86,7 @@ export default function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isPending}>Submit</Button>
       </form>
     </Form>
   )

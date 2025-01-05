@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.revature.bdong_ers.DTOs.UserIdDTO;
+import com.revature.bdong_ers.DTOs.UserIdPermissionsDTO;
 import com.revature.bdong_ers.DTOs.UserResponseDTO;
 import com.revature.bdong_ers.Entities.User;
 import com.revature.bdong_ers.Services.AuthService;
 import com.revature.bdong_ers.Services.ReimbursementService;
+import com.revature.bdong_ers.Services.RoleService;
 import com.revature.bdong_ers.Services.UserService;
 
 import jakarta.transaction.Transactional;
@@ -28,25 +29,27 @@ public class UserController {
     private UserService userService;
     private ReimbursementService reimbursementService;
     private AuthService authService;
+    private RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService, ReimbursementService reimbursementService, AuthService authService) {
+    public UserController(UserService userService, ReimbursementService reimbursementService, AuthService authService, RoleService roleService) {
         this.userService = userService;
         this.reimbursementService = reimbursementService;
         this.authService = authService;
+        this.roleService = roleService;
     }
 
     @GetMapping(value="/users")
-    public ResponseEntity<List<UserIdDTO>> getUsers(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserResponseDTO>> getUsers(@RequestHeader("Authorization") String token) {
 
         // Check if user is not an admin
         if (!authService.hasAdminPermissions(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        List<UserIdDTO> users = userService.getAllUsers()
+        List<UserResponseDTO> users = userService.getAllUsers()
             .stream()
-            .map(UserIdDTO::new)
+            .map((user) -> {return new UserResponseDTO(user, roleService);})
             .toList();
             
         return ResponseEntity.ok().body(users);
@@ -58,7 +61,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         User user = userService.getUser(authService.getTokenId(token));
-        return ResponseEntity.ok().body(new UserResponseDTO(user));
+        return ResponseEntity.ok().body(new UserResponseDTO(user, roleService));
     }
 
     // @GetMapping(value="/users/{id}")
@@ -92,6 +95,11 @@ public class UserController {
          
         // Check if user is not an admin
         if (!authService.hasAdminPermissions(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        // Cannot delete yourself
+        if (authService.getTokenId(token) == id) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 

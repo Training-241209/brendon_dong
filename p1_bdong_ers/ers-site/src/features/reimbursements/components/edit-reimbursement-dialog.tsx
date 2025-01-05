@@ -14,38 +14,39 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
-import UseCreateReimbursement from "../hooks/use-create-reimbursement";
+import { reimbursementEditSchema } from "../schemas/reimbursement-schemas";
+import UseModifyReimbursement from "../hooks/use-modify-reimbursement";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useEffect } from "react";
 
-export default function CreateReimbursementDialog() {
+export default function EditReimbursementDialog( props : z.infer<typeof reimbursementEditSchema> ) {
 
-    const {mutate: createReimbursement} = UseCreateReimbursement()
+    const {mutate: editReimbursement} = UseModifyReimbursement()
 
-    const form = useForm<z.infer<typeof reimbursementCreationSchema>>({
-        resolver: zodResolver(reimbursementCreationSchema),
+    const form = useForm<z.infer<typeof reimbursementEditSchema>>({
+        resolver: zodResolver(reimbursementEditSchema),
         defaultValues: {
-            amount: 0,
-            description: ""
+            reimbursementId: props.reimbursementId,
+            amount: props.amount,
+            description: props.description
         },
     })
     
-    function onSubmit(values: z.infer<typeof reimbursementCreationSchema>) {
-        createReimbursement(values)
+    function onSubmit(values: z.infer<typeof reimbursementEditSchema>) {
+        editReimbursement(values)
     }
 
-    
-
     return (
-        <Dialog onOpenChange={()=>{form.reset()}}>
+        <Dialog onOpenChange={() => {form.reset()}}>
             <DialogTrigger asChild>
-                <Button className="justify-end m-2">New Reimbursement</Button>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Reimbursement</DropdownMenuItem>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Create Reimbursement</DialogTitle>
+                    <DialogTitle>Edit Reimbursement</DialogTitle>
                 </DialogHeader>
                 <DialogDescription>
-                    Enter a USD amount and description of your reimbursement.
+                    Modify the USD amount and description of your reimbursement.
                 </DialogDescription>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">

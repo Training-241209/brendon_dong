@@ -101,16 +101,17 @@ public class ReimbursementController {
     public ResponseEntity<Reimbursement> patchReimbursementById(@RequestHeader("Authorization") String token,
             @PathVariable int id, @RequestBody Reimbursement reimbursement) {
         
-        // Check if user exists
-        if (!authService.userExists(token)) {
+        // Token user must match reimbursement being updated
+        if (!authService.userMatches(token, reimbursementService.viewReimbursement(id).getUserId())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        // If user isn't an admin, force keep previous status
-        if (!authService.hasAdminPermissions(token)) {
-            String previousStatus = reimbursementService.viewReimbursement(reimbursement.getReimbursementId()).getStatus();
-            reimbursement.setStatus(previousStatus);
+        // Cannot update reimbursements with a non-pending status
+        if (reimbursementService.viewReimbursement(id).getStatus() != "PENDING") {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
+
+        // Implementation does not update status
         return ResponseEntity.ok().body(reimbursementService.updateReimbursement(id, reimbursement));
     }
 
@@ -118,10 +119,18 @@ public class ReimbursementController {
     public ResponseEntity<Reimbursement> patchReimbursementByIdAndStatus(@RequestHeader("Authorization") String token,
             @RequestBody ReimbursementStatusDTO reimbursementStatusDTO) {
 
+        int reimbursementId = reimbursementStatusDTO.getReimbursementId();
+
         // Check if user is not an admin. Employees cannot update their own reimbursement statuses.
         if (!authService.hasAdminPermissions(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+
+        // Can't approve your own reimbursements, that's what we call fraud!
+        if (authService.getTokenId(token) == reimbursementService.viewReimbursement(reimbursementId).getUserId()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         return ResponseEntity.ok().body(reimbursementService
         .updateReimbursementStatus(reimbursementStatusDTO.getReimbursementId(), reimbursementStatusDTO.getStatus()));
     }

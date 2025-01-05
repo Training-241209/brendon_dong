@@ -1,5 +1,5 @@
 import CreateReimbursementDialog from '@/features/reimbursements/components/create-reimbursement-dialog'
-import UserReimbursementTable from '@/features/reimbursements/components/user-reimbursement-table'
+import UserReimbursementTable from '@/features/reimbursements/components/user-reimbursement-table.lazy'
 import { createLazyFileRoute } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute('/_authorized/dashboard')({
@@ -7,10 +7,12 @@ export const Route = createLazyFileRoute('/_authorized/dashboard')({
 })
 
 function RouteComponent() {
+
   return (
-    <>
-      <UserReimbursementTable />
-      <CreateReimbursementDialog />
-    </>
+    <div className=" max-w-md justify-center items-center py-8">
+        <h2 className="py-1 text-center border-2 bg-slate-50 text-gray-600"><strong>My Reimbursements</strong></h2>
+        <UserReimbursementTable />
+        <CreateReimbursementDialog />
+    </div>
   )
 }

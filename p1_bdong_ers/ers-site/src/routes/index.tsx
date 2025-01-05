@@ -1,4 +1,4 @@
-import useAuthUser from '@/features/auth/hooks/use-auth-user';
+import useAuth from '@/features/auth/hooks/use-auth';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react';
@@ -8,7 +8,7 @@ export const Route = createFileRoute('/')({
 })
 
 function RouteComponent() {
-  const { data: auth, isStale } = useAuthUser();
+  const { data: auth, isStale } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

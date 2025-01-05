@@ -19,16 +19,17 @@ import { Route as IndexImport } from './routes/index'
 import { Route as UnauthorizedRegisterImport } from './routes/_unauthorized/register'
 import { Route as UnauthorizedLoginImport } from './routes/_unauthorized/login'
 import { Route as AuthorizedLogoutImport } from './routes/_authorized/logout'
+import { Route as AuthorizedAccountImport } from './routes/_authorized/account'
 import { Route as AuthorizedAdminImport } from './routes/_authorized/_admin'
+import { Route as AuthorizedAdminUsersImport } from './routes/_authorized/_admin/users'
 
 // Create Virtual Routes
 
 const AuthorizedDashboardLazyImport = createFileRoute(
   '/_authorized/dashboard',
 )()
-const AuthorizedAccountLazyImport = createFileRoute('/_authorized/account')()
-const AuthorizedAdminUsersLazyImport = createFileRoute(
-  '/_authorized/_admin/users',
+const AuthorizedAdminReimbursementsLazyImport = createFileRoute(
+  '/_authorized/_admin/reimbursements',
 )()
 
 // Create/Update Routes
@@ -57,14 +58,6 @@ const AuthorizedDashboardLazyRoute = AuthorizedDashboardLazyImport.update({
   import('./routes/_authorized/dashboard.lazy').then((d) => d.Route),
 )
 
-const AuthorizedAccountLazyRoute = AuthorizedAccountLazyImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => AuthorizedRoute,
-} as any).lazy(() =>
-  import('./routes/_authorized/account.lazy').then((d) => d.Route),
-)
-
 const UnauthorizedRegisterRoute = UnauthorizedRegisterImport.update({
   id: '/register',
   path: '/register',
@@ -83,18 +76,33 @@ const AuthorizedLogoutRoute = AuthorizedLogoutImport.update({
   getParentRoute: () => AuthorizedRoute,
 } as any)
 
+const AuthorizedAccountRoute = AuthorizedAccountImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthorizedRoute,
+} as any)
+
 const AuthorizedAdminRoute = AuthorizedAdminImport.update({
   id: '/_admin',
   getParentRoute: () => AuthorizedRoute,
 } as any)
 
-const AuthorizedAdminUsersLazyRoute = AuthorizedAdminUsersLazyImport.update({
+const AuthorizedAdminReimbursementsLazyRoute =
+  AuthorizedAdminReimbursementsLazyImport.update({
+    id: '/reimbursements',
+    path: '/reimbursements',
+    getParentRoute: () => AuthorizedAdminRoute,
+  } as any).lazy(() =>
+    import('./routes/_authorized/_admin/reimbursements.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthorizedAdminUsersRoute = AuthorizedAdminUsersImport.update({
   id: '/users',
   path: '/users',
   getParentRoute: () => AuthorizedAdminRoute,
-} as any).lazy(() =>
-  import('./routes/_authorized/_admin/users.lazy').then((d) => d.Route),
-)
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -128,6 +136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthorizedAdminImport
       parentRoute: typeof AuthorizedImport
     }
+    '/_authorized/account': {
+      id: '/_authorized/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthorizedAccountImport
+      parentRoute: typeof AuthorizedImport
+    }
     '/_authorized/logout': {
       id: '/_authorized/logout'
       path: '/logout'
@@ -149,13 +164,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnauthorizedRegisterImport
       parentRoute: typeof UnauthorizedImport
     }
-    '/_authorized/account': {
-      id: '/_authorized/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AuthorizedAccountLazyImport
-      parentRoute: typeof AuthorizedImport
-    }
     '/_authorized/dashboard': {
       id: '/_authorized/dashboard'
       path: '/dashboard'
@@ -167,7 +175,14 @@ declare module '@tanstack/react-router' {
       id: '/_authorized/_admin/users'
       path: '/users'
       fullPath: '/users'
-      preLoaderRoute: typeof AuthorizedAdminUsersLazyImport
+      preLoaderRoute: typeof AuthorizedAdminUsersImport
+      parentRoute: typeof AuthorizedAdminImport
+    }
+    '/_authorized/_admin/reimbursements': {
+      id: '/_authorized/_admin/reimbursements'
+      path: '/reimbursements'
+      fullPath: '/reimbursements'
+      preLoaderRoute: typeof AuthorizedAdminReimbursementsLazyImport
       parentRoute: typeof AuthorizedAdminImport
     }
   }
@@ -176,11 +191,14 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthorizedAdminRouteChildren {
-  AuthorizedAdminUsersLazyRoute: typeof AuthorizedAdminUsersLazyRoute
+  AuthorizedAdminUsersRoute: typeof AuthorizedAdminUsersRoute
+  AuthorizedAdminReimbursementsLazyRoute: typeof AuthorizedAdminReimbursementsLazyRoute
 }
 
 const AuthorizedAdminRouteChildren: AuthorizedAdminRouteChildren = {
-  AuthorizedAdminUsersLazyRoute: AuthorizedAdminUsersLazyRoute,
+  AuthorizedAdminUsersRoute: AuthorizedAdminUsersRoute,
+  AuthorizedAdminReimbursementsLazyRoute:
+    AuthorizedAdminReimbursementsLazyRoute,
 }
 
 const AuthorizedAdminRouteWithChildren = AuthorizedAdminRoute._addFileChildren(
@@ -189,15 +207,15 @@ const AuthorizedAdminRouteWithChildren = AuthorizedAdminRoute._addFileChildren(
 
 interface AuthorizedRouteChildren {
   AuthorizedAdminRoute: typeof AuthorizedAdminRouteWithChildren
+  AuthorizedAccountRoute: typeof AuthorizedAccountRoute
   AuthorizedLogoutRoute: typeof AuthorizedLogoutRoute
-  AuthorizedAccountLazyRoute: typeof AuthorizedAccountLazyRoute
   AuthorizedDashboardLazyRoute: typeof AuthorizedDashboardLazyRoute
 }
 
 const AuthorizedRouteChildren: AuthorizedRouteChildren = {
   AuthorizedAdminRoute: AuthorizedAdminRouteWithChildren,
+  AuthorizedAccountRoute: AuthorizedAccountRoute,
   AuthorizedLogoutRoute: AuthorizedLogoutRoute,
-  AuthorizedAccountLazyRoute: AuthorizedAccountLazyRoute,
   AuthorizedDashboardLazyRoute: AuthorizedDashboardLazyRoute,
 }
 
@@ -222,23 +240,25 @@ const UnauthorizedRouteWithChildren = UnauthorizedRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthorizedAdminRouteWithChildren
+  '/account': typeof AuthorizedAccountRoute
   '/logout': typeof AuthorizedLogoutRoute
   '/login': typeof UnauthorizedLoginRoute
   '/register': typeof UnauthorizedRegisterRoute
-  '/account': typeof AuthorizedAccountLazyRoute
   '/dashboard': typeof AuthorizedDashboardLazyRoute
-  '/users': typeof AuthorizedAdminUsersLazyRoute
+  '/users': typeof AuthorizedAdminUsersRoute
+  '/reimbursements': typeof AuthorizedAdminReimbursementsLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthorizedAdminRouteWithChildren
+  '/account': typeof AuthorizedAccountRoute
   '/logout': typeof AuthorizedLogoutRoute
   '/login': typeof UnauthorizedLoginRoute
   '/register': typeof UnauthorizedRegisterRoute
-  '/account': typeof AuthorizedAccountLazyRoute
   '/dashboard': typeof AuthorizedDashboardLazyRoute
-  '/users': typeof AuthorizedAdminUsersLazyRoute
+  '/users': typeof AuthorizedAdminUsersRoute
+  '/reimbursements': typeof AuthorizedAdminReimbursementsLazyRoute
 }
 
 export interface FileRoutesById {
@@ -247,12 +267,13 @@ export interface FileRoutesById {
   '/_authorized': typeof AuthorizedRouteWithChildren
   '/_unauthorized': typeof UnauthorizedRouteWithChildren
   '/_authorized/_admin': typeof AuthorizedAdminRouteWithChildren
+  '/_authorized/account': typeof AuthorizedAccountRoute
   '/_authorized/logout': typeof AuthorizedLogoutRoute
   '/_unauthorized/login': typeof UnauthorizedLoginRoute
   '/_unauthorized/register': typeof UnauthorizedRegisterRoute
-  '/_authorized/account': typeof AuthorizedAccountLazyRoute
   '/_authorized/dashboard': typeof AuthorizedDashboardLazyRoute
-  '/_authorized/_admin/users': typeof AuthorizedAdminUsersLazyRoute
+  '/_authorized/_admin/users': typeof AuthorizedAdminUsersRoute
+  '/_authorized/_admin/reimbursements': typeof AuthorizedAdminReimbursementsLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -260,34 +281,37 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/account'
     | '/logout'
     | '/login'
     | '/register'
-    | '/account'
     | '/dashboard'
     | '/users'
+    | '/reimbursements'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | ''
+    | '/account'
     | '/logout'
     | '/login'
     | '/register'
-    | '/account'
     | '/dashboard'
     | '/users'
+    | '/reimbursements'
   id:
     | '__root__'
     | '/'
     | '/_authorized'
     | '/_unauthorized'
     | '/_authorized/_admin'
+    | '/_authorized/account'
     | '/_authorized/logout'
     | '/_unauthorized/login'
     | '/_unauthorized/register'
-    | '/_authorized/account'
     | '/_authorized/dashboard'
     | '/_authorized/_admin/users'
+    | '/_authorized/_admin/reimbursements'
   fileRoutesById: FileRoutesById
 }
 
@@ -325,8 +349,8 @@ export const routeTree = rootRoute
       "filePath": "_authorized.tsx",
       "children": [
         "/_authorized/_admin",
-        "/_authorized/logout",
         "/_authorized/account",
+        "/_authorized/logout",
         "/_authorized/dashboard"
       ]
     },
@@ -341,8 +365,13 @@ export const routeTree = rootRoute
       "filePath": "_authorized/_admin.tsx",
       "parent": "/_authorized",
       "children": [
-        "/_authorized/_admin/users"
+        "/_authorized/_admin/users",
+        "/_authorized/_admin/reimbursements"
       ]
+    },
+    "/_authorized/account": {
+      "filePath": "_authorized/account.tsx",
+      "parent": "/_authorized"
     },
     "/_authorized/logout": {
       "filePath": "_authorized/logout.tsx",
@@ -356,16 +385,16 @@ export const routeTree = rootRoute
       "filePath": "_unauthorized/register.tsx",
       "parent": "/_unauthorized"
     },
-    "/_authorized/account": {
-      "filePath": "_authorized/account.lazy.tsx",
-      "parent": "/_authorized"
-    },
     "/_authorized/dashboard": {
       "filePath": "_authorized/dashboard.lazy.tsx",
       "parent": "/_authorized"
     },
     "/_authorized/_admin/users": {
-      "filePath": "_authorized/_admin/users.lazy.tsx",
+      "filePath": "_authorized/_admin/users.tsx",
+      "parent": "/_authorized/_admin"
+    },
+    "/_authorized/_admin/reimbursements": {
+      "filePath": "_authorized/_admin/reimbursements.lazy.tsx",
       "parent": "/_authorized/_admin"
     }
   }

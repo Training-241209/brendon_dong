@@ -71,20 +71,23 @@ public class ReimbursementService {
         if (reimbursement.getAmount() <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
+        // Do not update status, use updateReimbursementStatus instead
         updatedReimbursement.setDescription(reimbursement.getDescription());
         updatedReimbursement.setAmount(reimbursement.getAmount());
-        updatedReimbursement.setStatus(reimbursement.getStatus());
         return this.reimbursementRepository.save(updatedReimbursement);
     }
 
-    // Temporary while there is no front end - should use previous function once there is a GUI
-    // to actually change all details of a reimbursement
     public Reimbursement updateReimbursementStatus(int id, String status) {
 
         // Reimbursement must already exist
         Reimbursement updatedReimbursement = reimbursementRepository.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
+        // Cannot undo status changes or set reimbursements back to pending
+        if (!updatedReimbursement.getStatus().equals("PENDING") || status.equals("PENDING")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         updatedReimbursement.setStatus(status);
         return this.reimbursementRepository.save(updatedReimbursement);
     }

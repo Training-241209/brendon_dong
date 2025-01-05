@@ -1,9 +1,8 @@
 import { AppSidebar } from '@/components/ui/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import useAuthAdmin from '@/features/auth/hooks/use-auth-admin'
-import useAuthUser from '@/features/auth/hooks/use-auth-user'
-import useMe from '@/features/auth/hooks/use-me'
+import useAuth from '@/features/auth/hooks/use-auth'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import { LoaderIcon } from 'lucide-react'
 import { useEffect } from 'react'
 
 export const Route = createFileRoute('/_authorized')({
@@ -13,9 +12,7 @@ export const Route = createFileRoute('/_authorized')({
 function RouteComponent() {
   const router = useRouter()
 
-  const { data: auth, isStale } = useAuthUser()
-  const { data: isAdmin } = useAuthAdmin()
-  const { data: myData } = useMe() // Querying the data early! Not sure why the enable:!! tag isn't enough for when I need it 
+  const { data: auth, isStale, isLoading } = useAuth()
   
   useEffect(() => {
       if (!auth || isStale) {
@@ -23,10 +20,11 @@ function RouteComponent() {
       }
   }, [auth]);
 
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <Outlet />
-    </SidebarProvider>
-  )
+  return (<>
+    {isLoading ? <LoaderIcon className="animate-spin" /> :
+      <SidebarProvider>
+        <AppSidebar />
+        <Outlet />
+      </SidebarProvider>
+    }</>)
 }

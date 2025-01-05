@@ -1,15 +1,15 @@
 import { axiosInstance } from "@/lib/axios-config";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import useAuthUser from "@/features/auth/hooks/use-auth-user";
+import useAuth from "@/features/auth/hooks/use-auth";
 
-export default function UseGetReimbursements() {
+export default function UseGetUserReimbursements() {
 
     const router = useRouter();
-    const { data: authToken } = useAuthUser();
+    const { data: authToken } = useAuth();
 
     return useQuery({
-        queryKey: ["reimbursements"],
+        queryKey: ["reimbursements", "me"],
         queryFn: async () => {
             try {
                 const resp = await axiosInstance.get("/reimbursements/me", { headers: {
@@ -22,7 +22,6 @@ export default function UseGetReimbursements() {
                 return null;
             }
         },
-        enabled: !!authToken,
-        staleTime: 1000 * 60 * 5, // 5 mins
+        staleTime: 1000 * 60 * 15
     });
 }
