@@ -11,15 +11,14 @@ export default function useLogin() {
     return useMutation({
         mutationFn: login,
         onSuccess: (successfulResponse) => {
-            localStorage.clear()
-            localStorage.setItem("auth", successfulResponse.headers.authorization)
+            // localStorage.clear()
+            // localStorage.setItem("auth", successfulResponse.headers.authorization)
             queryClient.invalidateQueries({queryKey: ["auth"]})
-            queryClient.invalidateQueries({queryKey: ["me"]})
             queryClient.setQueryData(["auth"], successfulResponse.headers.authorization)
             queryClient.refetchQueries({ queryKey: ["me"] })
         },
         onError: (error : AxiosError) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             toast.error("Invalid username or password.")
           } else {
             toast.error("Failed to login.")

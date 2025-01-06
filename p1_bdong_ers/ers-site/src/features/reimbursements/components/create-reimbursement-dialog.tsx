@@ -16,10 +16,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
 import UseCreateReimbursement from "../hooks/use-create-reimbursement";
+import { useState } from "react";
 
 export default function CreateReimbursementDialog() {
 
     const {mutate: createReimbursement} = UseCreateReimbursement()
+    const [open, setOpen] = useState(false);
 
     const form = useForm<z.infer<typeof reimbursementCreationSchema>>({
         resolver: zodResolver(reimbursementCreationSchema),
@@ -30,13 +32,14 @@ export default function CreateReimbursementDialog() {
     })
     
     function onSubmit(values: z.infer<typeof reimbursementCreationSchema>) {
-        createReimbursement(values)
+        form.reset();
+        setOpen(false);
+        createReimbursement(values);
     }
 
-    
 
     return (
-        <Dialog onOpenChange={()=>{form.reset()}}>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button className="justify-end m-2">New Reimbursement</Button>
             </DialogTrigger>
@@ -76,7 +79,7 @@ export default function CreateReimbursementDialog() {
                             )}
                         />
                         <DialogFooter>
-                            <Button className="flex text-right" type="submit">Submit</Button>
+                            <Button className="flex text-right" type="submit" onSubmit={()=>{setOpen(false)}}>Submit</Button>
                         </DialogFooter>
                     </form>
                 </Form>

@@ -16,15 +16,15 @@ function RouteComponent() {
   const queryClient = useQueryClient()
   const { data: auth, isStale, isLoading } = useAuth()
   const { data: me } = useMe()
-  const localStorageToken = localStorage.getItem("auth")
+  // const localStorageToken = localStorage.getItem("auth")
   
   useEffect(() => {
       if (!auth || isStale) {
-        if (localStorageToken) {
-          queryClient.setQueryData(["auth"], localStorageToken)
-        } else {
+        // if (localStorageToken) {
+        //   queryClient.setQueryData(["auth"], localStorageToken)
+        // } else {
           router.navigate({to: "/login"})
-        }
+        // }
       }
   }, [auth]);
 
