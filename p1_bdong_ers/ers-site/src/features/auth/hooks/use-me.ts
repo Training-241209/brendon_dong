@@ -22,6 +22,6 @@ export default function useMe() {
             }
         },
         enabled: !!authToken,
-        staleTime: 1000 * 60 * 2
+        staleTime: 1000 * 60 * 15
     });
 }

@@ -8,13 +8,6 @@ export const lastNameSchema = z.string().nonempty({
     message: "Last name cannot be empty."
 })
 
-export default interface User {
-    firstName: String,
-    lastName: String,
-    username: String,
-    password: String
-}
-
 export const userAccountModifySchema = z.object({
     username: z.string(),
     userId: z.number().int(),
