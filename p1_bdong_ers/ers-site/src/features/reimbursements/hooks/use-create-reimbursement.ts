@@ -4,6 +4,7 @@ import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
 import { z } from "zod";
 import useMe from "@/features/auth/hooks/use-me";
 import useAuth from "@/features/auth/hooks/use-auth";
+import { toast } from "sonner";
 
 export default function useCreateReimbursement() {
 
@@ -26,8 +27,10 @@ export default function useCreateReimbursement() {
         },
         onSuccess: () => {
             queryClient.refetchQueries({queryKey: ["reimbursements"]})
-            console.log("Reimbursement created")
+            toast.success("Successfully created reimburusement.")
         },
-        onError: (err) => { console.log(err)}
+        onError: () => {
+            toast.error("Failed to create reimbursement.")
+        }
     })
 }

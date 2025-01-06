@@ -17,7 +17,6 @@ export default function useGetUserReimbursements() {
                 }});
                 return resp.data;
             } catch (e) {
-                console.error(e);
                 router.navigate({ to: "/dashboard" });
                 return null;
             }

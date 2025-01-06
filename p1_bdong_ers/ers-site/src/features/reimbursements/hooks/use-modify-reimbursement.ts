@@ -3,6 +3,7 @@ import {  reimbursementEditSchema } from "../schemas/reimbursement-schemas";
 import { axiosInstance } from "@/lib/axios-config";
 import useAuth from "@/features/auth/hooks/use-auth";
 import { z } from "zod";
+import { toast } from "sonner";
 
 export default function useModifyReimbursement() {
 
@@ -22,8 +23,11 @@ export default function useModifyReimbursement() {
             return request.data;
         },
         onSuccess: () => {
+            toast.success("Successfully changed reimbursement.")
             queryClient.refetchQueries({queryKey: ["reimbursements"]})
         },
-        onError: (err) => { console.log(err)}
+        onError: () => {
+            toast.error("Failed to change reimbursement.")
+        }
     });
 }
