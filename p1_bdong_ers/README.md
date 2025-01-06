@@ -5,11 +5,11 @@ This is a **Java Full Stack Employee Reimbursement System (ERS)**. The  ERS cent
 - Spring-Based Back End
 - Local Postgresql database
 
-
-Notable tech used in the Front End includes:
+Notable tech includes:
 - TanStack Router
 - TanStack Query
 - Shadcn Components
+- JWT Tokens
 
 <hr>
 
@@ -45,9 +45,20 @@ Notable tech used in the Front End includes:
 
 - Register for a new account (create new User)
 
+<hr>
 
 **Challenges:**
 
 - Bad starting architectural issues - there's such thing as too little coupling
 
-- Tables take a lot of work to manipulate
+- Tables take a lot of work to manipulate, didn't get them how I wanted to
+
+<hr>
+
+**Future Enhancements:**
+
+- More data!
+  - Reimbursement last modified timestamp
+  - Reimbursement approved timestamp
+  - Reimbursement approver
+- Registration from users page
