@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import QueryProvider from '@/lib/query-provider'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -14,7 +14,7 @@ function RootComponent() {
       <QueryProvider>
         <Outlet />
         <Toaster position="bottom-left" />
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
       </QueryProvider>
     </React.Fragment>
   )
