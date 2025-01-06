@@ -47,9 +47,14 @@ Notable tech includes:
 
 <hr>
 
+**ERD:**
+![image](erd.png)
+
+<hr>
+
 **Challenges:**
 
-- Bad starting architectural issues - there's such thing as too little coupling
+- Unideal starting architectural issues - there's such thing as too little coupling
 
 - Tables take a lot of work to manipulate, didn't get them how I wanted to
 
