@@ -12,6 +12,7 @@ function RouteComponent() {
 
     useEffect(() => {
         queryClient.clear()
+        localStorage.removeItem("auth")
         router.navigate({to: "/login"})
     });
 }

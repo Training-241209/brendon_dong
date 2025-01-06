@@ -33,7 +33,7 @@ export const reimbursementDisplaySchema = z.object({
     reimbursementId: z.number(),
     amount: z.number(),
     description: z.string(),
-    status: z.enum(["pending", "accepted", "denied"]),
+    status: z.enum(["PENDING", "ACCEPTED", "DENIED"]),
     firstName: z.string(),
     lastName: z.string(),
     username: z.string()

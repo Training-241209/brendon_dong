@@ -12,7 +12,9 @@ function RouteComponent() {
     <div className=" max-w-md justify-center items-center py-8">
         <h2 className="py-1 text-center border-2 bg-slate-50 text-gray-600"><strong>My Reimbursements</strong></h2>
         <UserReimbursementTable />
-        <CreateReimbursementDialog />
+        <div className="flex flex-row justify-end">
+          <CreateReimbursementDialog />
+        </div>
     </div>
   )
 }

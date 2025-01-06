@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -33,6 +34,7 @@ export default function EditReimbursementDialog( props : z.infer<typeof reimburs
     })
     
     function onSubmit(values: z.infer<typeof reimbursementEditSchema>) {
+        console.log(values)
         editReimbursement(values)
     }
 
@@ -77,7 +79,9 @@ export default function EditReimbursementDialog( props : z.infer<typeof reimburs
                             )}
                         />
                         <DialogFooter>
-                            <Button className="flex text-right" type="submit">Submit</Button>
+                            <DialogClose asChild>
+                                <Button className="flex text-right" type="submit">Edit</Button>
+                            </DialogClose>
                         </DialogFooter>
                     </form>
                 </Form>

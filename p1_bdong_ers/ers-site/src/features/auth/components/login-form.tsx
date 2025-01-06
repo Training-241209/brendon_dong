@@ -35,6 +35,7 @@ export default function LoginForm() {
               <FormControl>
                 <Input placeholder="Username" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -46,6 +47,7 @@ export default function LoginForm() {
               <FormControl>
                 <Input type="password" placeholder="Password" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

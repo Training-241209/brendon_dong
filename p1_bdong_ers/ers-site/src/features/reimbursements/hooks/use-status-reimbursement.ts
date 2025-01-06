@@ -14,7 +14,7 @@ export default function UseStatusReimbursement() {
         mutationFn: async (props : z.infer<typeof reimbursementReviewSchema>) => {
             const request = await axiosInstance.patch("/reimbursements", {
                 reimbursementId: props.reimbursementId,
-                status: props.status.toUpperCase()
+                status: props.status
             }, { headers: {
                 'Authorization': `${authToken}`
                 }}

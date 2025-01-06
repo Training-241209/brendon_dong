@@ -44,9 +44,7 @@ public class AuthController {
     @PostMapping(value="/register")
     public ResponseEntity<UserIdPermissionsDTO> registerUser(@RequestBody User user) {
         User registeredUser = userService.registerAccount(user);
-        String token = authService.generateToken(registeredUser);
-        HttpHeaders headers = createHttpAuthHeaders(token);
-        return ResponseEntity.ok().headers(headers).body(new UserIdPermissionsDTO(registeredUser));
+        return ResponseEntity.ok().body(new UserIdPermissionsDTO(registeredUser));
     }
 
     @PostMapping(value="/login")

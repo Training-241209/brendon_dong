@@ -1,4 +1,3 @@
-import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { LoaderIcon } from "lucide-react";
 import UseGetUsers from "../hooks/use-get-users";

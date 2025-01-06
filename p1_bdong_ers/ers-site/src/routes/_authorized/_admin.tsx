@@ -12,7 +12,7 @@ function RouteComponent() {
   const { data: user, isStale, isLoading } = useMe()
 
   useEffect(() => {
-      if (!user.admin || isStale) {
+      if (isStale || !user.admin) {
         router.navigate({to: "/login"})
       }
     }, [user]);

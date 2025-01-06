@@ -2,8 +2,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { z } from "zod"
 import { reimbursementDisplaySchema } from "./reimbursement-schemas"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ArrowUpDown } from "lucide-react"
 import ReviewReimbursementDialog from "../components/review-reimbursement-dialog"
 
 export const fullReimbursementColumns: ColumnDef<z.infer<typeof reimbursementDisplaySchema>>[] = [
@@ -131,9 +130,12 @@ export const fullReimbursementColumns: ColumnDef<z.infer<typeof reimbursementDis
         id: "actions",
         cell: ({ row }) => {
           const rowData = row.original;
-          return (
-            <ReviewReimbursementDialog {...rowData} />
-        )},
+          return <>
+          { 
+            rowData.status == "PENDING" ? 
+            <ReviewReimbursementDialog {...rowData} /> : <></>
+          }</>
+      },
       },
 ]
 

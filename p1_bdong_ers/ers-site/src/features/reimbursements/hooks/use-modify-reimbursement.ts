@@ -23,7 +23,6 @@ export default function UseModifyReimbursement() {
         },
         onSuccess: () => {
             queryClient.refetchQueries({queryKey: ["reimbursements"]})
-            console.log("Reimbursement created")
         },
         onError: (err) => { console.log(err)}
     });

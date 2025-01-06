@@ -22,6 +22,6 @@ export default function UseGetUserReimbursements() {
                 return null;
             }
         },
-        staleTime: 1000 * 60 * 15
+        staleTime: 1000 * 60 * 2
     });
 }

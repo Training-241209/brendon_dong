@@ -39,14 +39,19 @@ export default function ReviewReimbursementDialog(props : z.infer<typeof reimbur
                     <DialogTitle>Review Reimbursement</DialogTitle>
                 </DialogHeader>
                 <DialogDescription>
-                    Input reimbursement information here!
+                    {props.firstName} {props.lastName} - <strong>${props.amount}</strong> <br />
+                    {props.description}
                 </DialogDescription>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button className="flex text-right" onClick={()=>{ clickHandler(props, "approved")}}>Approve</Button>
+                        <Button className="flex text-right px-4 bg-red-500 hover:bg-red-700" onClick={()=>{ clickHandler(props, "DENIED")}}>
+                            <strong>Deny</strong>
+                        </Button>
                     </DialogClose>
                     <DialogClose asChild>
-                        <Button className="flex text-right px-4" onClick={()=>{ clickHandler(props, "denied")}}>Deny</Button>
+                        <Button className="flex text-right bg-green-500 hover:bg-green-700" onClick={()=>{ clickHandler(props, "ACCEPTED")}}>
+                            <strong>Approve</strong>
+                        </Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

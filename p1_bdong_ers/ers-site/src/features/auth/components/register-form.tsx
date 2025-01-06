@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -24,14 +24,17 @@ export default function RegisterForm() {
     })
    
     function onSubmit(values: z.infer<typeof registerSchema>) {
-      console.log(values)
-      register(values)
+      if (values.confirmPassword !== values.password) {
+        form.setError("confirmPassword", { message: "Passwords do not match." })
+      } else {
+        register(values)
+      }
     }
 
     return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-      <FormField
+        <FormField
           control={form.control}
           name="firstName"
           render={({ field }) => (
@@ -39,6 +42,7 @@ export default function RegisterForm() {
               <FormControl>
                 <Input placeholder="First Name" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -50,6 +54,7 @@ export default function RegisterForm() {
               <FormControl>
                 <Input placeholder="Last Name" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -61,6 +66,7 @@ export default function RegisterForm() {
               <FormControl>
                 <Input placeholder="Username" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -72,6 +78,7 @@ export default function RegisterForm() {
               <FormControl>
                 <Input placeholder="Password" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -83,6 +90,7 @@ export default function RegisterForm() {
               <FormControl>
                 <Input placeholder="Confirm Password" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

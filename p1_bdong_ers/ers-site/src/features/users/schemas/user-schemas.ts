@@ -1,8 +1,12 @@
 import { z } from "zod"
 
-export const firstNameSchema = z.string()
+export const firstNameSchema = z.string().nonempty({
+    message: "First name cannot be empty."
+})
 
-export const lastNameSchema = z.string()
+export const lastNameSchema = z.string().nonempty({
+    message: "Last name cannot be empty."
+})
 
 export default interface User {
     firstName: String,

@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { registerSchema } from "../schemas/user-input-schemas";
 import { axiosInstance } from "@/lib/axios-config";
 import { z } from "zod";
+import { toast } from "sonner";
 import { AxiosError } from "axios";
 
 export default function useRegister() {
@@ -11,10 +12,15 @@ export default function useRegister() {
     return useMutation({
         mutationFn: register,
         onSuccess: () => {
+            toast.success("Account created sucessfully.")
             router.navigate({to:"/login"})
         },
-        onError: (error : AxiosError) => {
-            console.log(error.response);
+        onError: (err : AxiosError) => {
+            if (err.status == 409) {
+                toast.error("Username already in use.")
+            } else {
+                toast.error("Failed to register user.")
+            }
         },
     });
   

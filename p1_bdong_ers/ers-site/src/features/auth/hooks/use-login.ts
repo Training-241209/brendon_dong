@@ -3,6 +3,7 @@ import { loginSchema } from "../schemas/user-input-schemas";
 import { axiosInstance } from "@/lib/axios-config";
 import { z } from "zod";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export default function useLogin() {
     const queryClient = useQueryClient()
@@ -10,12 +11,19 @@ export default function useLogin() {
     return useMutation({
         mutationFn: login,
         onSuccess: (successfulResponse) => {
+            localStorage.clear()
+            localStorage.setItem("auth", successfulResponse.headers.authorization)
             queryClient.invalidateQueries({queryKey: ["auth"]})
+            queryClient.invalidateQueries({queryKey: ["me"]})
             queryClient.setQueryData(["auth"], successfulResponse.headers.authorization)
             queryClient.refetchQueries({ queryKey: ["me"] })
         },
         onError: (error : AxiosError) => {
-            console.log(error.response);
+          if (error.status == 403) {
+            toast.error("Invalid username or password.")
+          } else {
+            toast.error("Failed to login.")
+          }
         },
     });
   

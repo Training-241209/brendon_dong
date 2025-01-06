@@ -107,7 +107,7 @@ public class ReimbursementController {
         }
 
         // Cannot update reimbursements with a non-pending status
-        if (reimbursementService.viewReimbursement(id).getStatus() != "PENDING") {
+        if (!reimbursementService.viewReimbursement(id).getStatus().equals("PENDING")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
