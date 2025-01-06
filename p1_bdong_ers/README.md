@@ -48,6 +48,7 @@ Notable tech includes:
 <hr>
 
 **ERD:**
+
 ![image](erd.png)
 
 <hr>
