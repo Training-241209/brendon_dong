@@ -15,7 +15,7 @@ function RootComponent() {
       <QueryProvider>
         <Outlet />
         <Toaster position="bottom-left" />
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
       </QueryProvider>
     </React.Fragment>
   )
