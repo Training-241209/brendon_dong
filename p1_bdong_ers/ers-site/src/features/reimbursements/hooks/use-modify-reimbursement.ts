@@ -4,7 +4,7 @@ import { axiosInstance } from "@/lib/axios-config";
 import useAuth from "@/features/auth/hooks/use-auth";
 import { z } from "zod";
 
-export default function UseModifyReimbursement() {
+export default function useModifyReimbursement() {
 
     const queryClient = useQueryClient();
     const { data: authToken } = useAuth();

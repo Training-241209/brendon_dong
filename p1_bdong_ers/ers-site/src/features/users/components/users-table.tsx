@@ -1,11 +1,11 @@
 import { DataTable } from "@/components/ui/data-table";
 import { LoaderIcon } from "lucide-react";
-import UseGetUsers from "../hooks/use-get-users";
+import useGetUsers from "../hooks/use-get-users";
 import { userColumns } from "../schemas/user-columns";
 
 export default function UsersTable() {
 
-    const {data : userData, isLoading} = UseGetUsers()
+    const {data : userData, isLoading} = useGetUsers()
 
     return (
         <>

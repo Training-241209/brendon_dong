@@ -3,7 +3,7 @@ import { axiosInstance } from "@/lib/axios-config";
 import useAuth from "@/features/auth/hooks/use-auth";
 import { toast } from "sonner";
 
-export default function UsePromoteUser() {
+export default function usePromoteUser() {
 
     const queryClient = useQueryClient();
     const { data: authToken } = useAuth();

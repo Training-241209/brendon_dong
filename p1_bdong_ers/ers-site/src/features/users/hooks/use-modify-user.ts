@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { userAccountModifySchema } from "../schemas/user-schemas";
 import { z } from "zod";
 
-export default function UseModifyUser() {
+export default function useModifyUser() {
 
     return useMutation({
         mutationFn: async (props : z.infer<typeof userAccountModifySchema>) => {

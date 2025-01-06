@@ -12,11 +12,11 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { z } from "zod";
 import { userViewSchema } from "../schemas/user-schemas";
-import UseDeleteUser from "../hooks/use-delete-user";
+import useDeleteUser from "../hooks/use-delete-user";
 
 export default function DeleteUserDialog(props : z.infer<typeof userViewSchema>) {
 
-    const {mutate: deleteUser} = UseDeleteUser()
+    const {mutate: deleteUser} = useDeleteUser()
 
     return (
         <Dialog>

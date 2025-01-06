@@ -21,6 +21,7 @@ export const reimbursementEditSchema = z.object({
     reimbursementId: z.number(),
     amount: z.coerce.number().int().positive().finite(),
     description: z.string().nonempty(),
+    status: z.enum(["PENDING", "ACCEPTED", "DENIED"])
 })
 
 export const reimbursementSubmitSchema = z.object({

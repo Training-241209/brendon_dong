@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import useAuth from "@/features/auth/hooks/use-auth";
 
-export default function UseGetAllReimbursements() {
+export default function useGetAllReimbursements() {
 
     const router = useRouter();
     const { data: authToken } = useAuth();

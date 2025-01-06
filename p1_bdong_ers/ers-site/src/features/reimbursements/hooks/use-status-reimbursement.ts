@@ -5,7 +5,7 @@ import useAuth from "@/features/auth/hooks/use-auth";
 import { z } from "zod";
 import { toast } from "sonner";
 
-export default function UseStatusReimbursement() {
+export default function useStatusReimbursement() {
 
     const queryClient = useQueryClient();
     const { data: authToken } = useAuth();

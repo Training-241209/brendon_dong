@@ -7,11 +7,11 @@ import { z } from "zod";
 import { userAccountModifySchema } from "../schemas/user-schemas";
 import useMe from "@/features/auth/hooks/use-me";
 import { LoaderIcon } from "lucide-react";
-import UseModifyUser from "../hooks/use-modify-user";
+import useModifyUser from "../hooks/use-modify-user";
 
 export default function AccountForm() {
     const { data: me, isLoading } = useMe();
-    const { mutate: modifyUser, isPending } = UseModifyUser();
+    const { mutate: modifyUser, isPending } = useModifyUser();
 
     const form = useForm<z.infer<typeof userAccountModifySchema>>({
         resolver: zodResolver(userAccountModifySchema),

@@ -15,12 +15,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { reimbursementCreationSchema } from "../schemas/reimbursement-schemas";
-import UseCreateReimbursement from "../hooks/use-create-reimbursement";
+import useCreateReimbursement from "../hooks/use-create-reimbursement";
 import { useState } from "react";
 
 export default function CreateReimbursementDialog() {
 
-    const {mutate: createReimbursement} = UseCreateReimbursement()
+    const {mutate: createReimbursement} = useCreateReimbursement()
     const [open, setOpen] = useState(false);
 
     const form = useForm<z.infer<typeof reimbursementCreationSchema>>({

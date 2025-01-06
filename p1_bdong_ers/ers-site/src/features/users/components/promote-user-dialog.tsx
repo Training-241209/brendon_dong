@@ -9,12 +9,12 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-import UsePromoteUser from "../hooks/use-promote-user";
+import usePromoteUser from "../hooks/use-promote-user";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function PromoteUserDialog(props : { userId : Number }) {
 
-    const {mutate: promoteUser} = UsePromoteUser()
+    const {mutate: promoteUser} = usePromoteUser()
 
     return (
         <Dialog>

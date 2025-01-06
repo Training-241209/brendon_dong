@@ -10,14 +10,14 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import UseStatusReimbursement from "../hooks/use-status-reimbursement";
+import useStatusReimbursement from "../hooks/use-status-reimbursement";
 import Reimbursement, { reimbursementDisplaySchema, reimbursementReviewSchema } from "../schemas/reimbursement-schemas";
 import { z } from "zod";
 import { StampIcon } from "lucide-react";
 
 export default function ReviewReimbursementDialog(props : z.infer<typeof reimbursementDisplaySchema>) {
 
-    const {mutate: updateStatus} = UseStatusReimbursement()
+    const {mutate: updateStatus} = useStatusReimbursement()
 
     function clickHandler(props : z.infer<typeof reimbursementDisplaySchema>, newStatus : string) {
         const newReimbursement : z.infer<typeof reimbursementReviewSchema> = {

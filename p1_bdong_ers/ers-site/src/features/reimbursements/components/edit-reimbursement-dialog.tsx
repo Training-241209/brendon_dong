@@ -16,20 +16,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { reimbursementEditSchema } from "../schemas/reimbursement-schemas";
-import UseModifyReimbursement from "../hooks/use-modify-reimbursement";
+import useModifyReimbursement from "../hooks/use-modify-reimbursement";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useEffect } from "react";
 
 export default function EditReimbursementDialog( props : z.infer<typeof reimbursementEditSchema> ) {
 
-    const {mutate: editReimbursement} = UseModifyReimbursement()
+    const {mutate: editReimbursement} = useModifyReimbursement()
 
     const form = useForm<z.infer<typeof reimbursementEditSchema>>({
         resolver: zodResolver(reimbursementEditSchema),
         defaultValues: {
             reimbursementId: props.reimbursementId,
             amount: props.amount,
-            description: props.description
+            description: props.description,
+            status: props.status
         },
     })
     
@@ -41,7 +42,7 @@ export default function EditReimbursementDialog( props : z.infer<typeof reimburs
     return (
         <Dialog onOpenChange={() => {form.reset()}}>
             <DialogTrigger asChild>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Reimbursement</DropdownMenuItem>
+                <DropdownMenuItem disabled={props.status != "PENDING"} onSelect={(e) => e.preventDefault()}>Edit Reimbursement</DropdownMenuItem>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>

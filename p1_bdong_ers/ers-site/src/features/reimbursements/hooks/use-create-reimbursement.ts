@@ -5,7 +5,7 @@ import { z } from "zod";
 import useMe from "@/features/auth/hooks/use-me";
 import useAuth from "@/features/auth/hooks/use-auth";
 
-export default function UseCreateReimbursement() {
+export default function useCreateReimbursement() {
 
     const queryClient = useQueryClient()
     const { data: user } = useMe()
