@@ -1,9 +1,15 @@
 # Project 1 - ERS
 
 This is a **Java Full Stack Employee Reimbursement System (ERS)**. The  ERS centers around Employees submitting Reimbursements that can either be accepted or denied by Managers. It is made using:
-- ~~React-Based Front end (talks to backend via HTTP)~~ (It WILL be. Eventually. Not yet.)
+- React-Based Front End (talks to backend via HTTP)
 - Spring-Based Back End
 - Local Postgresql database
+
+Notable tech includes:
+- TanStack Router
+- TanStack Query
+- Shadcn Components
+- JWT Tokens
 
 <hr>
 
@@ -32,13 +38,27 @@ This is a **Java Full Stack Employee Reimbursement System (ERS)**. The  ERS cent
 
 - Update existing user information, including role
 
-*Managers can do anything Users can do. No need for role checks on User functionalities.\**
-
-\**Managers cannot spoof reimbursements and submit them in other people's names as of the current implementation. Makes sense to me at least? If this is considered bad, can be easily changed back.*
-
 
 **Users who are not logged in to the application can ONLY:**
 
 - Attempt to log in
 
 - Register for a new account (create new User)
+
+<hr>
+
+**Challenges:**
+
+- Bad starting architectural issues - there's such thing as too little coupling
+
+- Tables take a lot of work to manipulate, didn't get them how I wanted to
+
+<hr>
+
+**Future Enhancements:**
+
+- More data!
+  - Reimbursement last modified timestamp
+  - Reimbursement approved timestamp
+  - Reimbursement approver
+- Registration from users page
